@@ -15,6 +15,29 @@ uint8_t wantedGear = 100; // default unreacheble gear
 uint8_t gear;
 uint8_t newGear = 2;
 
+// Obvious internals
+uint8_t prevGear = 2; // Start on gear 2
+uint8_t pendingGear = 2;
+
+// float ratio;
+// Shift pressure defaults
+int spcPercentVal = 100;
+int mpcPercentVal = 100;
+
+// for timers
+unsigned long int shiftStartTime, shiftStopTime, delaySinceLast = 0;
+unsigned long int shiftDuration = 0;
+
+// Solenoid used
+int cSolenoidEnabled = 0;
+int cSolenoid = 0; // Change solenoid pin to be controlled.
+int lastMapVal;
+int shiftLoad = 0;
+int shiftAtfTemp = 0;
+int wrongGearPoint = 0;
+bool shiftConfirmed, preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
+double lastShiftPoint;
+
 bool fullAuto = false;
 
 bool tpsSensor = true;
@@ -117,3 +140,6 @@ int initBVoltage = 0; // analogRead(boostPin) * 5.0;
 int initEVoltage = 0; // analogRead(exhaustPresPin) * 5.0;
 
 bool evalGear = true;
+
+bool boostLimit;
+bool boostLimitShift;

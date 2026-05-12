@@ -20,29 +20,6 @@
 // input:polltrans -> core:switchGearStop
 // poll -> evaluateGear
 
-// Obvious internals
-uint8_t gear, prevGear = 2; // Start on gear 2
-uint8_t newGear = 2;
-uint8_t pendingGear = 2;
-// float ratio;
-// Shift pressure defaults
-int spcPercentVal = 100;
-int mpcPercentVal = 100;
-
-// for timers
-unsigned long int shiftStartTime, shiftStopTime, delaySinceLast = 0;
-unsigned long int shiftDuration = 0;
-
-// Solenoid used
-int cSolenoidEnabled = 0;
-int cSolenoid = 0; // Change solenoid pin to be controlled.
-int lastMapVal;
-int shiftLoad = 0;
-int shiftAtfTemp = 0;
-int wrongGearPoint = 0;
-bool shiftConfirmed, preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
-double lastShiftPoint;
-
 // Gear shift logic
 // Beginning of gear change phase
 // Send PWM signal to defined solenoid in transmission conductor plate.

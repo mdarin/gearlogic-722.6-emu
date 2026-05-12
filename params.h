@@ -70,14 +70,14 @@ struct SensorVals
     int curSpeed, curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, fuelUsed, fuelUsedAvg, curLambda;
     uint8_t curTps, curLoad;
     float curSlip, curRatio, curPresDiff;
-} SensorVals;
+};
 
 struct ConfigParam
 {
     int boostMax, boostDrop, boostSpring, fuelMaxRPM, maxRPM, tireWidth, tireProfile, tireInches, rearDiffTeeth, nextShiftDelay, stallSpeed, batteryLimit, firstTccGear, triggerWheelTeeth, tpsAgre, highRPMshiftLimit, lowRPMshiftLimit;
     float diffRatio, maxSlip, transSloppy;
     int oneTotwo, twoTothree, threeTofour, fourTofive, fiveTofour, fourTothree, threeTotwo, twoToone;
-} ConfigParam;
+};
 
 extern bool debugEnabled;
 
@@ -90,6 +90,29 @@ extern bool stickCtrl;       // must be configurable
 extern uint8_t wantedGear; // default unreacheble gear
 extern uint8_t gear;
 extern uint8_t newGear;
+
+// Obvious internals
+extern uint8_t prevGear; // Start on gear 2
+extern uint8_t pendingGear;
+
+// float ratio;
+// Shift pressure defaults
+extern int spcPercentVal;
+extern int mpcPercentVal;
+
+// for timers
+extern unsigned long int shiftStartTime, shiftStopTime, delaySinceLast;
+extern unsigned long int shiftDuration;
+
+// Solenoid used
+extern int cSolenoidEnabled;
+extern int cSolenoid; // Change solenoid pin to be controlled.
+extern int lastMapVal;
+extern int shiftLoad;
+extern int shiftAtfTemp;
+extern int wrongGearPoint;
+extern bool shiftConfirmed, preShift, postShift, preShiftDone, shiftDone, postShiftDone;
+extern double lastShiftPoint;
 
 extern bool shiftBlocker;
 extern bool shiftPending;
@@ -166,5 +189,8 @@ extern int initBVoltage;
 extern int initEVoltage;
 
 extern bool evalGear;
+
+extern bool boostLimit;
+extern bool boostLimitShift;
 
 #endif // PARAMS_H
