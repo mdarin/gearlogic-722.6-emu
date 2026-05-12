@@ -15,20 +15,27 @@
 			"extensions": [
 				"aaron-bond.better-comments",
 				"usernamehw.errorlens",
-				"ohanedan.lowlight-go-errors"
+				"ohanedan.lowlight-go-errors",
+				"ms-vscode.cpptools",
+				"ms-vscode.cpp-devtools",
+				"ms-vscode.cpptools-extension-pack",
+				"llvm-vs-code-extensions.vscode-clangd",
+				"ms-vscode.cmake-tools",
+				"formulahendry.code-runner",
+				"streetsidesoftware.code-spell-checker",
+				"vivaxy.vscode-conventional-commits",
+				"fabiospampinato.vscode-diff",
+				"eamodio.gitlens",
+				"oderwat.indent-rainbow"
 			]
 		}
 	}
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
 	// Configure tool-specific properties.
 	// "customizations": {},
-
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 }

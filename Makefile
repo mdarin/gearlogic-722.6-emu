@@ -4,7 +4,8 @@ CFLAGS := -Wall -Wextra -std=gnu11 -O2 -g
 LDFLAGS := -lpthread
 
 # Исходные файлы и цель
-SRCS := *.c
+# Automatically find all .c files in the current directory
+SRCS = $(wildcard *.c) 
 TARGET := threads_demo
 OBJS := $(SRCS:.c=.o)
 

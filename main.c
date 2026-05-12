@@ -9,7 +9,10 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <unistd.h>
-
+#include <stdint.h>
+#include <stdbool.h>
+// #include "pollstick.h"
+// #include "params.h"
 
 static volatile int keep_running = 1;
 
