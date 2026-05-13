@@ -26,7 +26,8 @@
 				"vivaxy.vscode-conventional-commits",
 				"fabiospampinato.vscode-diff",
 				"eamodio.gitlens",
-				"oderwat.indent-rainbow"
+				"oderwat.indent-rainbow",
+				"alexnesnes.teleplot"
 			]
 		}
 	}

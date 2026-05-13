@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "teleplot.h"
 // #include "pollstick.h"
 // #include "params.h"
 
@@ -96,11 +97,23 @@ void *keys_thread(void *arg)
 void *dummy_thread1(void *arg)
 {
     (void)arg;
+    int counter = 0;
     printf("[DummyThread1] Started.\n");
+
     while (keep_running)
     {
-        printf("[DummyThread1] 2000 ms delay...\n");
-        sleep(2); // задержка 2000 мс
+        // Отправка числового значения
+        double sensor_value = 20.0 + (counter % 10) * 1.5;
+        teleplot_send("sensor_1", sensor_value);
+
+        // Отправка строкового статуса
+        if (counter % 5 == 0)
+        {
+            teleplot_send("thread1_status", (counter % 10 == 0) ? 1 : 0);
+        }
+
+        printf("[DummyThread1] Sent data, counter=%d\n", counter++);
+        sleep(2);
     }
     printf("[DummyThread1] Exiting.\n");
     return NULL;
@@ -129,6 +142,12 @@ int main()
     // memset(&sa, 0, sizeof(sa));
     sa.sa_handler = sigint_handler;
     sigaction(SIGINT, &sa, NULL);
+
+    if (teleplot_init("127.0.0.1", 47269) != 0)
+    {
+        fprintf(stderr, "Failed to initialize Teleplot\n");
+        // Можно продолжить работу без телеметрии
+    }
 
     // Переводим терминал в режим посимвольного чтения (без буферизации строк)
     set_noncanonical_mode();
@@ -177,6 +196,8 @@ int main()
 
     // Восстанавливаем терминал
     restore_terminal_mode();
+    teleplot_close(); // Очистка ресурсов
+    printf("[Main] Telemetry terminated.\n");
     printf("[Main] All threads finished. Goodbye.\n");
     return EXIT_SUCCESS;
 }
