@@ -1,13 +1,12 @@
 # Компилятор и флаги
 CC := gcc
-# CFLAGS := -Wall -Wextra -std=gnu11 -O2 -g 
-CFLAGS := -Wall -Wextra -std=gnu11 -O0 -g 
-LDFLAGS := -lpthread
+CFLAGS := -Wall -Wextra -std=gnu11 -O2 -g
+LDFLAGS :=
 
 # Исходные файлы и цель
 # Automatically find all .c files in the current directory
 SRCS = $(wildcard *.c) 
-TARGET := threads_demo
+TARGET := engi
 OBJS := $(SRCS:.c=.o)
 
 # Цели, которые не являются файлами

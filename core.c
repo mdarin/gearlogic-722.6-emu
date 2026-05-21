@@ -29,7 +29,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 
   if (debugEnabled)
   {
-    printf("[switchGearStart->switchGearStart] Begin of gear change current-solenoid: %d - %d\n", gear, newGear);
+    printf("[switchGearStart->switchGearStart] Begin of gear change current-solenoid: [%d -> %d]\n", gear, newGear);
   }
 
   if (trans)
@@ -49,7 +49,8 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   {
     if (debugEnabled)
     {
-      printf("[switchGearStart->switchGearStart] blocking change or transmission disabled delaySinceLast/nextShiftDelay: %d/%lu/n", delaySinceLast, config.nextShiftDelay);
+      printf("[switchGearStart->switchGearStart] blocking change or transmission disabled delaySinceLast: %lu  nextShiftDelay: %d/n",
+             delaySinceLast, config.nextShiftDelay);
     }
   }
 }
@@ -66,12 +67,14 @@ void doPreShift()
 
     if (debugEnabled)
     {
-      printf("[switchGearStart->preShift] curBoost/curBoostLim: %d/%d\n", sensor.curBoost, sensor.curBoostLim);
+      printf("[switchGearStart->preShift] curBoost: %d  curBoostLim: %d\n",
+             sensor.curBoost, sensor.curBoostLim);
     }
   }
   else
   {
-    printf("[switchGearStart->preShift] blocking curBoost/curBoostLim: %d/%d\n", sensor.curBoost, sensor.curBoostLim);
+    printf("[switchGearStart->preShift] blocking curBoost: %d  curBoostLim: %d\n",
+           sensor.curBoost, sensor.curBoostLim);
   }
 }
 
@@ -182,10 +185,10 @@ void switchGearStop()
 }
 
 // upshift parameter logic gathering
-
 void gearchangeUp(int newGear)
 {
   struct SensorVals sensor = readSensors();
+
   if (shiftBlocker == false && shiftPending == true && sensor.curRPM >= config.lowRPMshiftLimit)
   {
     pendingGear = newGear;
@@ -199,11 +202,11 @@ void gearchangeUp(int newGear)
 
     switch (newGear)
     {
-    case 1:
+    case 1: // -------------------------------------------------------------------------
       gear = 1;
       break;
 
-    case 2:
+    case 2: // -------------------------------------------------------------------------
       if (debugEnabled)
       {
         printf("[gearchangeUp->switchGearStart] Solenoid y3 requested with spcMap12/mpcMap12, load/atfTemp %d - %d\n", sensor.curLoad, sensor.curAtfTemp);
@@ -215,11 +218,12 @@ void gearchangeUp(int newGear)
       if (tpsSensor)
       {
         lastMapVal = 100;
+
         switchGearStart(y3, readPercentualMap(spcMap12, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap12, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
 
-    case 3:
+    case 3: // -------------------------------------------------------------------------
       if (debugEnabled)
       {
         printf("[gearchangeUp->switchGearStart] Solenoid y4 requested with spcMap23/mpcMap23, load/atfTemp %d, %d\n", sensor.curLoad, sensor.curAtfTemp);
@@ -231,11 +235,12 @@ void gearchangeUp(int newGear)
       if (tpsSensor)
       {
         lastMapVal = 130;
+
         switchGearStart(y4, readPercentualMap(spcMap23, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap23, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
 
-    case 4:
+    case 4: // -------------------------------------------------------------------------
       if (debugEnabled)
       {
         printf("[gearchangeUp->switchGearStart] Solenoid y5 requested with spcMap34/mpcMap34 %d, load/atfTemp %d\n", sensor.curLoad, sensor.curAtfTemp);
@@ -247,11 +252,12 @@ void gearchangeUp(int newGear)
       if (tpsSensor)
       {
         lastMapVal = 160;
+
         switchGearStart(y5, readPercentualMap(spcMap34, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap34, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
 
-    case 5:
+    case 5: // -------------------------------------------------------------------------
       if (debugEnabled)
       {
         printf("[gearchangeUp->switchGearStart] Solenoid y3 requested with spcMap45/mpcMap45 %d, load/atfTemp %d \n", sensor.curLoad, sensor.curAtfTemp);
@@ -263,11 +269,12 @@ void gearchangeUp(int newGear)
       if (tpsSensor)
       {
         lastMapVal = 190;
+
         switchGearStart(y3, readPercentualMap(spcMap45, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap45, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
 
-    default:
+    default: // -------------------------------------------------------------------------
       break;
     }
   }
@@ -293,22 +300,25 @@ void gearchangeUp(int newGear)
 void gearchangeDown(int newGear)
 {
   struct SensorVals sensor = readSensors();
+
   if (shiftBlocker == false && shiftPending == true && sensor.curRPM < config.highRPMshiftLimit)
   {
     pendingGear = newGear;
     shiftLoad = sensor.curLoad;
     shiftAtfTemp = sensor.curAtfTemp;
+
     if (debugEnabled)
     {
-      printf("[gearChangeDown->gearChangeDown] performing change prev-new: %d -> %d\n", gear, newGear);
+      printf("[gearChangeDown->gearChangeDown] performing change prev->new [%d -> %d] gear\n", gear, newGear);
     }
 
     switch (newGear)
     {
-    case 1:
+    case 1: // -------------------------------------------------------------------------
       if (debugEnabled)
       {
-        printf("[gearchangeDown->switchGearStart] Solenoid y3 requested with spcMap21/mpcMap21, load/atfTemp %d %d\n", sensor.curLoad, sensor.curAtfTemp);
+        printf("[gearchangeDown->switchGearStart] Solenoid y3 requested with spcMap21/mpcMap21  load: %d  atfTemp %d\n",
+               sensor.curLoad, sensor.curAtfTemp);
       }
       if (!tpsSensor)
       {
@@ -317,14 +327,16 @@ void gearchangeDown(int newGear)
       if (tpsSensor)
       {
         lastMapVal = 210;
+
         switchGearStart(y3, readPercentualMap(spcMap21, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap21, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
 
-    case 2:
+    case 2: // -------------------------------------------------------------------------
       if (debugEnabled)
       {
-        printf("[gearchangeDown->switchGearStart] Solenoid y4 requested with spcMap32/mpcMap32, load/atfTemp %d %d\n", sensor.curLoad, sensor.curAtfTemp);
+        printf("[gearchangeDown->switchGearStart] Solenoid y4 requested with spcMap32/mpcMap32  load: %d  atfTemp: %d\n",
+               sensor.curLoad, sensor.curAtfTemp);
       }
       if (!tpsSensor)
       {
@@ -333,14 +345,16 @@ void gearchangeDown(int newGear)
       if (tpsSensor)
       {
         lastMapVal = 240;
+
         switchGearStart(y4, readPercentualMap(spcMap32, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap32, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
 
-    case 3:
+    case 3: // -------------------------------------------------------------------------
       if (debugEnabled)
       {
-        printf("[gearchangeDown->switchGearStart] Solenoid y5 requested with spcMap43/mpcMap43, load/atfTemp %d %d\n", sensor.curLoad, sensor.curAtfTemp);
+        printf("[gearchangeDown->switchGearStart] Solenoid y5 requested with spcMap43/mpcMap43  load: %d  atfTemp: %d\n",
+               sensor.curLoad, sensor.curAtfTemp);
       }
       if (!tpsSensor)
       {
@@ -349,14 +363,16 @@ void gearchangeDown(int newGear)
       if (tpsSensor)
       {
         lastMapVal = 270;
+
         switchGearStart(y5, readPercentualMap(spcMap43, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap43, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
 
-    case 4:
+    case 4: // -------------------------------------------------------------------------
       if (debugEnabled)
       {
-        printf("[gearchangeDown->switchGearStart] Solenoid y3 requested with spcMap54/mpcMap54, load/atfTemp %d %d\n", sensor.curLoad, sensor.curAtfTemp);
+        printf("[gearchangeDown->switchGearStart] Solenoid y3 requested with spcMap54/mpcMap54  load: %d  atfTemp: %d\n",
+               sensor.curLoad, sensor.curAtfTemp);
       }
       if (!tpsSensor)
       {
@@ -365,15 +381,18 @@ void gearchangeDown(int newGear)
       if (tpsSensor)
       {
         lastMapVal = 300;
+
         switchGearStart(y3, readPercentualMap(spcMap54, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap54, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
 
-    case 5:
+    case 5: // -------------------------------------------------------------------------
       gear = 5;
+      printf("[gearchangeDown] 5th gear\n");
       break;
 
-    default:
+    default: // -------------------------------------------------------------------------
+      printf("[gearchangeDown] do nothing, default case\n");
       break;
     }
   }
@@ -381,11 +400,14 @@ void gearchangeDown(int newGear)
   {
     if (debugEnabled)
     {
-      printf("[gearChangeDown->gearChangeDown] Blocking change %d %d\n", shiftBlocker, shiftPending);
+      printf("[gearChangeDown->gearChangeDown] Blocking change shiftBlocker: %d  shiftPending: %d\n",
+             shiftBlocker, shiftPending);
     }
+
     if (debugEnabled && sensor.curRPM >= config.highRPMshiftLimit)
     {
-      printf("[gearChangeDown->gearChangeDown] high rpm limit hit with RPM: %d limit: %d\n", sensor.curRPM, config.highRPMshiftLimit);
+      printf("[gearChangeDown->gearChangeDown] high rpm limit hit with RPM: %d limit: %d\n",
+             sensor.curRPM, config.highRPMshiftLimit);
 
       if (!shiftBlocker)
       {
@@ -407,12 +429,15 @@ int evaluateGear()
   }
   else
   {
+    // when gear is 2, 3 or 4, n3 speed is not zero,
+    // and then incoming shaft speed (=turbine speed) equals to n2 speed)
     incomingShaftSpeed = n2Speed;
-    // when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
   }
+
   if (n3Speed == 0 && sensor.curSpeed < 10)
   {
-    measuredGear = 1; // If we're near standstill and there is no N3 info, we can assume that we're on 1.
+    // If we're near standstill and there is no N3 info, we can assume that we're on 1.
+    measuredGear = 1;
   }
   else
   {
@@ -422,6 +447,10 @@ int evaluateGear()
 
   return measuredGear;
 }
+
+// ========================================================================
+// Utilitarty functions
+// ========================================================================
 
 float ratioFromGear(int inputGear)
 {
@@ -508,12 +537,14 @@ float getGearSlip()
   {
     minRatio[gear] = ratio;
   }
+
   slip = maxRatio[gear] - minRatio[gear];
 
   return slip;
 }
 
 // ==========================
+//* UNUSED NOW
 void faultMon(void *)
 {
   struct SensorVals sensor = readSensors();

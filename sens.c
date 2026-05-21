@@ -4,24 +4,31 @@ struct SensorVals readSensors()
 {
     struct SensorVals sensor;
 
-    // we need to calculate these in precise moment to get accurate reading, so this acts just an interface for global vars.
+    //* we need to calculate these in precise moment to get accurate reading,
+    //* so this acts just an interface for global vars.
+
     sensor.curSlip = gearSlip;
     sensor.curRatio = ratio;
     sensor.curEvalGear = evalGearVal;
     sensor.fuelUsed = fuelUsed;
     sensor.fuelUsedAvg = fuelUsedAvg;
-    sensor.curOilTemp = oilRead();
-    sensor.curAtfTemp = atfRead();
+    sensor.curOilTemp = 110; // oilRead();
+    sensor.curAtfTemp = 110; // atfRead();
     sensor.curExTemp = exhaustTempRead();
-    sensor.curBoost = boostRead();
+    sensor.curBoost = 1; // boostRead();
     sensor.curExPres = exhaustPressureRead();
     sensor.curPresDiff = 0; // float(sensor.curExPres) / sensor.curBoost;
     sensor.curBoostLim = boostLimitRead(sensor.curOilTemp);
-    sensor.curTps = tpsRead();
-    sensor.curRPM = rpmRead();
-    sensor.curSpeed = speedRead();
+    sensor.curTps = (int)(my_engine.gas_pedal * (double)(100)); // tpsRead();
+    sensor.curRPM = (int)(my_engine.current_rpm);               // rpmRead();
+    sensor.curSpeed = (int)(my_engine.speed_kmh);               // speedRead();
     sensor.curLoad = loadRead(sensor.curTps, sensor.curBoost, sensor.curBoostLim, sensor.curRPM);
-    sensor.curBattery = batteryRead();
+    sensor.curBattery = 14000; // batteryRead();
+
+    // my_engine.gas_pedal * 100;
+    // my_engine.speed_kmh;
+    // my_engine.current_rpm;
+    // my_engine.load * 100;
 
     return sensor;
 }

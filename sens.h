@@ -6,6 +6,7 @@
 #include "params.h"
 #include "calc.h"
 #include "core.h"
+#include "engine.h"
 
 // Поддерживает адаптивную настройку давления
 int adaptSPC(int, int, int);

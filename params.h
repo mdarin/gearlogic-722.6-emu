@@ -79,6 +79,17 @@ struct ConfigParam
     int oneTotwo, twoTothree, threeTofour, fourTofive, fiveTofour, fourTothree, threeTotwo, twoToone;
 };
 
+// Структура для хранения состояния стика
+struct StickState
+{
+    int white;
+    int blue;
+    int green;
+    int yellow;
+    int wantedGear;
+    const char *positionName; // для отладки
+};
+
 extern bool debugEnabled;
 
 extern bool justStarted;
@@ -86,6 +97,12 @@ extern bool resistiveStick;
 extern bool garageShift;
 extern bool garageShiftMove; // ?
 extern bool stickCtrl;       // must be configurable
+extern bool tccLock;
+extern bool manual;
+extern bool carRunning;
+extern bool ignition;
+extern double garageTime;
+extern int lockVal;
 
 extern uint8_t wantedGear; // default unreacheble gear
 extern uint8_t gear;
@@ -192,5 +209,10 @@ extern bool evalGear;
 
 extern bool boostLimit;
 extern bool boostLimitShift;
+
+// Stick and keys
+extern const struct StickState stickStates[];
+extern int currentStateIndex;
+extern const int stickStatesCount;
 
 #endif // PARAMS_H

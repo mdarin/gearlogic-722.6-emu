@@ -11,15 +11,14 @@ bool garageShift = true;
 bool garageShiftMove = false; // ?
 bool stickCtrl = true;        // must be configurable
 
-uint8_t wantedGear = 100; // default unreacheble gear
+uint8_t wantedGear = 100; // default unreacheble gear // todo use constant
 uint8_t gear;
 uint8_t newGear = 2;
 
 // Obvious internals
-uint8_t prevGear = 2; // Start on gear 2
+uint8_t prevGear = 2; //? Start on gear 2
 uint8_t pendingGear = 2;
 
-// float ratio;
 // Shift pressure defaults
 int spcPercentVal = 100;
 int mpcPercentVal = 100;
@@ -120,6 +119,8 @@ struct ConfigParam config = {
 bool trans = true;
 bool shiftBlocker = false;
 bool shiftPending = false;
+bool carRunning = false;
+bool ignition = true;
 
 bool exhaustPresSensor = false;
 bool batteryMonitor = false;
@@ -128,6 +129,10 @@ bool exhaustTempSensor = true;
 bool rpmSpeed = true;
 bool diffSpeed = true;
 bool adaptive = false;
+bool tccLock;
+bool manual = false;
+double garageTime;
+int lockVal = 0;
 
 int boostOverride = 150;
 
@@ -143,3 +148,35 @@ bool evalGear = true;
 
 bool boostLimit;
 bool boostLimitShift;
+
+// Stick and keys
+
+// Таблица состояний (заглушка)
+const struct StickState stickStates[] = {
+    // P (Паркинг)
+    {HIGH, HIGH, HIGH, LOW, 8, "P"},
+
+    // R (Реверс)
+    {LOW, HIGH, HIGH, HIGH, 7, "R"},
+
+    // N (Нейтраль)
+    {HIGH, LOW, HIGH, HIGH, 6, "N"},
+
+    // Drive 5
+    {LOW, LOW, HIGH, LOW, 5, "D"},
+
+    // Drive 4
+    {LOW, LOW, LOW, HIGH, 4, "D4"},
+
+    // Drive 3
+    {LOW, HIGH, LOW, LOW, 3, "D3"},
+
+    // Drive 2
+    {HIGH, LOW, LOW, LOW, 2, "D2"},
+
+    // Drive 1
+    {HIGH, HIGH, LOW, HIGH, 1, "D1"}};
+
+int currentStateIndex = 0;
+// Количество состояний
+const int stickStatesCount = sizeof(stickStates) / sizeof(stickStates[0]);
