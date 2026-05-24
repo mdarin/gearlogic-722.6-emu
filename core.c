@@ -81,8 +81,8 @@ void doPreShift()
 void doShift()
 {
   // Actual shift
-  int spcSetVal = (100 - spcPercentVal) * 2.55;
-  int mpcSetVal = (100 - mpcPercentVal) * 2.55;
+  int spcSetVal = (100 - spcPercentVal) * 2.55; // convert to uint8_t 255
+  int mpcSetVal = (100 - mpcPercentVal) * 2.55; // convert to uint8_t 255
 
   if (adaptive)
   {
@@ -100,23 +100,25 @@ void doShift()
 
   if (spcPercentVal > 100)
   {
-    spcPercentVal = 100; // to make sure we're on the bounds.
+    // to make sure we're on the bounds.
+    spcPercentVal = 100;
     if (debugEnabled)
     {
       printf("[switchGearStart->switchGearStart] SPC high limit hit.\n");
     }
   }
-
   if (spcPercentVal < 10)
   {
-    spcPercentVal = 10; // to be on safe side.
+    // to be on safe side.
+    spcPercentVal = 10;
     if (debugEnabled)
     {
       printf("[switchGearStart->switchGearStart] SPC low limit hit.\n");
     }
   }
 
-  spcSetVal = (100 - spcPercentVal) * 2.55; // these are calculated twice to make sure if there is changes they are noted.
+  //! these are calculated twice to make sure if there is changes they are noted.
+  spcSetVal = (100 - spcPercentVal) * 2.55;
   mpcSetVal = (100 - mpcPercentVal) * 2.55;
 
   int spcPressureNormalized = pressureNormalization(spcSetVal);
@@ -147,7 +149,7 @@ void doShift()
 
 void doPostShift()
 {
-  // You can do post shift stuff here.
+  //* You can do post shift stuff here.
   if (debugEnabled)
   {
     printf("[switchGearStart->postShift] completed. \n");

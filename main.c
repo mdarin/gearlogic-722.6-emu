@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include "teleplot.h"
 #include "pollstick.h"
+#include "polltrans.h"
 #include "decidegear.h"
 #include "params.h"
 #include "engine.h"
@@ -140,7 +141,7 @@ void *dummy_thread1(void *arg)
 }
 
 // Поток 3: просто цикл с задержкой 2000 мс
-void *dummy_thread2(void *arg)
+void *engine_thread(void *arg)
 {
     (void)arg;
 
@@ -153,6 +154,8 @@ void *dummy_thread2(void *arg)
     printf("[DummyThread2] Started.\n");
     while (keep_running)
     {
+        my_engine.gear = gear;
+
         if (time < 15.0)
         {
             engine_set_gas_pedal(&my_engine, 0.0);
@@ -188,6 +191,8 @@ void *dummy_thread2(void *arg)
         teleplot_send("speed_kmh", my_engine.speed_kmh);
         teleplot_send("n2speed_rpm", n2Speed);
         teleplot_send("n3speed_rpm", n3Speed);
+        teleplot_send("gear", my_engine.gear);
+        teleplot_send("target_gear", wantedGear);
 
         // if (step % 10 == 0)
         // {
@@ -216,7 +221,7 @@ void *pollstick_thread(void *arg)
     while (keep_running)
     {
         pollstick(NULL);
-        sleep(1);
+        usleep(500000); // 500 мс
     }
     printf("[PollstickThread] Exiting.\n");
     return NULL;
@@ -230,21 +235,24 @@ void *decidegear_thread(void *arg)
     while (keep_running)
     {
         decideGear(NULL);
-        sleep(1);
+        // sleep(1); // задержка 1000 мс
+        usleep(500000); // 500 мс
     }
     printf("[DecidegearThread] Exiting.\n");
     return NULL;
 }
 
-// todo Поток управления АКПП выполняет процедуру переключения на выбранную передачу
+// Поток управления АКПП выполняет процедуру переключения на выбранную передачу
 void *polltrans_thread(void *arg)
 {
     (void)arg;
+    uint32_t startMillisTimestamp = millis();
     printf("[PolltransThread] Started.\n");
     while (keep_running)
     {
-        printf("[PolltransThread] 2000 ms delay...\n");
-        sleep(2); // задержка 2000 мс
+        polltrans(NULL);
+        // sleep(1); // задержка 1000 мс
+        usleep(500000); // 500 мс
     }
     printf("[PolltransThread] Exiting.\n");
     return NULL;
@@ -254,7 +262,7 @@ void *polltrans_thread(void *arg)
 
 int main()
 {
-    pthread_t t1, t2, t3, t4, t5;
+    pthread_t t1, t2, t3, t4, t5, t6;
     struct sigaction sa = {0};
 
     // Установка обработчика Ctrl+C
@@ -271,7 +279,7 @@ int main()
     // Переводим терминал в режим посимвольного чтения (без буферизации строк)
     set_noncanonical_mode();
 
-    // Запускаем потоки
+    // Запускаем потоки с задачами имитации автомобиля
     if (pthread_create(&t1, NULL, keys_thread, NULL) != 0)
     {
         perror("pthread_create keys_thread");
@@ -284,13 +292,13 @@ int main()
         restore_terminal_mode();
         return EXIT_FAILURE;
     }
-    if (pthread_create(&t3, NULL, dummy_thread2, NULL) != 0)
+    if (pthread_create(&t3, NULL, engine_thread, NULL) != 0)
     {
         perror("pthread_create dummy_thread2");
         restore_terminal_mode();
         return EXIT_FAILURE;
     }
-    // todo запускам потоки с задачами управления АКПП
+    // запускам потоки с задачами управления АКПП
     if (pthread_create(&t4, NULL, pollstick_thread, NULL) != 0)
     {
         perror("pthread_create pollstick_thread");
@@ -303,12 +311,12 @@ int main()
         restore_terminal_mode();
         return EXIT_FAILURE;
     }
-    // if (pthread_create(&t3, NULL, dummy_thread2, NULL) != 0)
-    // {
-    //     perror("pthread_create dummy_thread2");
-    //     restore_terminal_mode();
-    //     return EXIT_FAILURE;
-    // }
+    if (pthread_create(&t6, NULL, polltrans_thread, NULL) != 0)
+    {
+        perror("pthread_create polltrans_thread");
+        restore_terminal_mode();
+        return EXIT_FAILURE;
+    }
 
     printf("[Main] Threads started. Press 'q' or Ctrl+C to exit.\n");
 
@@ -333,6 +341,7 @@ int main()
     pthread_join(t3, NULL);
     pthread_join(t4, NULL);
     pthread_join(t5, NULL);
+    pthread_join(t6, NULL);
 
     // Восстанавливаем терминал
     restore_terminal_mode();

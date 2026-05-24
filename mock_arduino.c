@@ -3,8 +3,10 @@
 // Глобальная переменная, имитирующая системное время в миллисекундах
 static uint32_t mock_millis = 0;
 
-// Заглушка millis()
-uint32_t millis() { return /*mock_millis*/ 25000; }
-
-// Вспомогательная функция для продвижения времени (используйте в тестах)
-void advanceMillis(uint32_t ms) { mock_millis += ms; }
+// Заглушка millis() использует монотонные часы системы — не сбрасывается при изменениях системного времени.
+uint32_t millis()
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint32_t)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}

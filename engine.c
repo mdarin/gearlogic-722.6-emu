@@ -52,7 +52,7 @@ void engine_set_load(Engine *eng, double load)
 void engine_update_state(Engine *eng, double dt)
 {
     // Автоматическое переключение передач // todo (можно отключить для ручного)
-    update_gear_auto(eng);
+    // update_gear_auto(eng);
 
     // Коэффициент инерции (чем выше, тем быстрее отклик)
     double inertia = 5.0; // [1/сек]

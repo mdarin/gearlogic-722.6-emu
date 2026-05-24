@@ -7,6 +7,7 @@
 void polltrans(void *)
 {
     struct SensorVals sensor = readSensors();
+
     unsigned int shiftDelay = 2000;
 
     if (shiftBlocker)
@@ -19,12 +20,13 @@ void polltrans(void *)
         {
             shiftDelay = 1200;
         }
+
         shiftDuration = millis() - shiftStartTime;
         if (shiftDuration > shiftDelay && shiftDone)
         {
             if (debugEnabled)
             {
-                printf("[polltrans->switchGearStop] shiftDelay-spcPercentVal-atfTemp %u - %d - %d\n",
+                printf("[polltrans->switchGearStop] shiftDelay: %u  spcPercentVal: %d  atfTemp: %d\n",
                        shiftDelay, spcPercentVal, atfRead());
             }
             switchGearStop();
@@ -46,7 +48,7 @@ void polltrans(void *)
     // Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
     //  "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
     //  MPC = varying with load, SPC constant 33%
-    // int mpcVal = readMap(mpcNormalMap, sensor.curLoad, sensor.curAtfTemp);
+    int mpcVal = readMap(mpcNormalMap, sensor.curLoad, sensor.curAtfTemp);
 
     if (!shiftBlocker)
     {

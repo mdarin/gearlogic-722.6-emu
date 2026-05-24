@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <time.h>
 
 // Определим константы, если они не определены (например, вне Arduino.h)
 #ifndef HIGH
