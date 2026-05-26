@@ -35,7 +35,8 @@
 				"eamodio.gitlens",
 				"oderwat.indent-rainbow",
 				"alexnesnes.teleplot",
-				"hars.CppSnippets"
+				"hars.CppSnippets",
+				"shd101wyy.markdown-preview-enhanced"
 			]
 		}
 	},
