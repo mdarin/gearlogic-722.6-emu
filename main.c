@@ -151,7 +151,7 @@ void *engine_thread(void *arg)
     double dt = 0.5; // шаг 500 мс
     int step = 0;
 
-    printf("[DummyThread2] Started.\n");
+    printf("[EngineThread] Started.\n");
     while (keep_running)
     {
         my_engine.gear = gear;
@@ -183,8 +183,11 @@ void *engine_thread(void *arg)
         engine_update_state(&my_engine, dt);
 
         n2Speed = my_engine.current_rpm;
-        // todo P and N n3speed = 0 нет связи с двигателем
-        n3Speed = (int)(0.8 * (double)(n2Speed));
+        // P or N selected, n3speed = 0 нет механической связи с двигателем
+        if (wantedGear == 7 || wantedGear == 8)
+        {
+            n3Speed = (int)(0.8 * (double)(n2Speed));
+        }
 
         teleplot_send("tps", my_engine.gas_pedal);
         teleplot_send("engine_rpm", my_engine.current_rpm);
@@ -207,7 +210,7 @@ void *engine_thread(void *arg)
         // usleep(50000); // 50 000 мкс = 50 мс (шаг 0.05 сек)
         usleep(500000); // 500 мс
     }
-    printf("[DummyThread2] Exiting.\n");
+    printf("[EngineThread] Exiting.\n");
     return NULL;
 }
 

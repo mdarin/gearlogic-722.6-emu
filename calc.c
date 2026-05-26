@@ -23,8 +23,12 @@
 int pressureNormalization(int givenPressure)
 {
   struct SensorVals sensor = readSensors();
+
   int targetVoltage = 12000;
   float pressureModifier = (float)(targetVoltage) / sensor.curBattery;
+
+  printf("[calc] givenPressure: %d\n", givenPressure);
+
   if (sensor.curBattery < targetVoltage)
   {
     printf("Battery voltage too low, target pressure cannot be reached.\n");
@@ -48,7 +52,7 @@ int pressureNormalization(int givenPressure)
   return normalizedPressure;
 }
 
-// Mapping throttle position sensor voltage to percentage
+// todo Mapping throttle position sensor voltage to percentage
 int readTPSVoltage(int voltage)
 {
   uint8_t minLowuint8_t = 0;  // EEPROM.read(1000);
@@ -81,7 +85,6 @@ int readExPresVoltage(int voltage)
 // Mapping battery voltage to actual voltage
 int readBatVoltage(int voltage)
 {
-
   int result = map(voltage, 0, 3075, 0, 15000); // 0-15V
   return result;
 }
@@ -130,7 +133,6 @@ int readTempMap(const int theMap[23][2], int y)
   for (int i = 1; i < yelements; i++)
   {
     int curVal = pgm_read_dword_near(&theMap[i][0]);
-
     if (y <= curVal)
     {
       yidx = i;
@@ -152,14 +154,12 @@ int readTempMap(const int theMap[23][2], int y)
 
 int readTempMapInverted(const int theMap[14][2], int y)
 {
-
   int yidx = 0; // by default near first element
   int yelements = 14;
 
   for (int i = 1; i < yelements; i++)
   {
     int curVal = pgm_read_dword_near(&theMap[i][0]);
-
     if (y <= curVal)
     {
       yidx = i;
@@ -181,7 +181,6 @@ int readTempMapInverted(const int theMap[14][2], int y)
 
 int readPercentualMap(const int theMap[14][12], int x, int y)
 {
-
   if (y < -20)
   {
     y = -20;
@@ -200,7 +199,6 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   for (int i = 1; i < xelements; i++)
   {
     int curVal = pgm_read_dword_near(&theMap[0][i]);
-
     if (x <= curVal)
     {
       xidx = i;
@@ -211,7 +209,6 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   for (int i = 1; i < yelements; i++)
   {
     int curVal = pgm_read_dword_near(&theMap[i][0]);
-
     if (y <= curVal)
     {
       yidx = i;
@@ -233,8 +230,10 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
 
   float betweenL1 = (((float)(curX)-x) / (curX - prevX));
   float calculatedLine1 = mapValue - (betweenL1 * (mapValue - prevMapValue));
+
   if (ShiftDebugEnabled)
   {
+    printf("initial\n");
     printf("mapvalue: %d\n", mapValue);
     printf("prevmapvalue: %d\n", prevMapValue);
     printf("betweenL1: %f\n", betweenL1);
@@ -242,6 +241,7 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
     printf("curX: %d\n", curX);
     printf("prevX: %d\n", prevX);
   }
+
   if (y > curY)
   {
     double calculatedLine2 = nextMapValue - (betweenL1 * (nextMapValue - fuzzyMapValue));
@@ -250,6 +250,7 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
 
     if (ShiftDebugEnabled)
     {
+      printf("y > curY\n");
       printf("y: %d\n", y);
       printf("curY: %d\n", curY);
       printf("prevY: %d\n", prevY);
@@ -267,6 +268,7 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
 
     if (ShiftDebugEnabled)
     {
+      printf("y < curY\n");
       printf("y: %d\n", y);
       printf("curY: %d\n", curY);
       printf("prevY: %d\n", prevY);
@@ -284,6 +286,7 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
 
     if (ShiftDebugEnabled)
     {
+      printf("y == curY\n");
       printf("y: %d\n", y);
       printf("curY: %d\n", curY);
       printf("prevY: %d\n", prevY);
@@ -292,8 +295,9 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
       printf("3calculatedPoint: %d\n", calculatedPoint);
     }
   }
-  // calculatedPoint = calculatedPoint * config.transSloppy;
 
+  // * transSloppy = 1.2  multiplier for pressures coping with old transmissions
+  // calculatedPoint = calculatedPoint * config.transSloppy;
   /* if (calculatedPoint > 100)
    {
      calculatedPoint = 100;
@@ -302,6 +306,7 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
    {
      calculatedPoint = 0;
    }*/
+
   return calculatedPoint;
 }
 

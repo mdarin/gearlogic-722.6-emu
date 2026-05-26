@@ -4,6 +4,7 @@
 
 // ----[ CONFIG ] ----
 bool debugEnabled = true;
+bool ShiftDebugEnabled = true;
 
 bool justStarted = true;
 bool resistiveStick = false;
@@ -140,7 +141,6 @@ double lastShiftPoint = 0;
 int lastXval;
 int lastYval;
 
-bool ShiftDebugEnabled = false;
 int initBVoltage = 0; // analogRead(boostPin) * 5.0;
 int initEVoltage = 0; // analogRead(exhaustPresPin) * 5.0;
 
